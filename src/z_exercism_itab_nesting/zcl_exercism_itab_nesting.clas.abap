@@ -56,37 +56,24 @@ ENDCLASS.
 CLASS zcl_exercism_itab_nesting IMPLEMENTATION.
 
   METHOD perform_nesting.
-   LOOP AT artists ASSIGNING FIELD-SYMBOL(<ls_artist>).
-     DATA album_list TYPE STANDARD TABLE OF album_song_nested_type WITH KEY album_id.
-     CLEAR album_list.
-
-     LOOP AT albums ASSIGNING FIELD-SYMBOL(<ls_album>)
-          WHERE artist_id = <ls_artist>-artist_id.
-       DATA song_list TYPE STANDARD TABLE OF song_nested_type WITH KEY song_id.
-       CLEAR song_list.
-
-       LOOP AT songs ASSIGNING FIELD-SYMBOL(<ls_song>)
-            WHERE artist_id = <ls_artist>-artist_id
-              AND album_id = <ls_album>-album_id.
-         APPEND VALUE #(
-                         song_id   = <ls_song>-song_id
-                         song_name = <ls_song>-song_name
-                       ) TO song_list.
-       ENDLOOP.
-
-       APPEND VALUE #(
-                       album_id   = <ls_album>-album_id
-                       album_name = <ls_album>-album_name
-                       songs      = song_list
-                     ) TO album_list.
-     ENDLOOP.
-
-     APPEND VALUE #(
-                     artist_id   = <ls_artist>-artist_id
-                     artist_name = <ls_artist>-artist_name
-                     albums      = album_list
-                   ) TO nested_data.
-   ENDLOOP.
+   nested_data = VALUE #(
+                          FOR <artist> IN artists (
+                            artist_id   = <artist>-artist_id
+                            artist_name = <artist>-artist_name
+                            albums      = VALUE #(
+                              FOR <album> IN albums WHERE ( artist_id = <artist>-artist_id ) (
+                                album_id   = <album>-album_id
+                                album_name = <album>-album_name
+                                songs      = VALUE #(
+                                  FOR <song> IN songs WHERE ( artist_id = <artist>-artist_id AND album_id = <album>-album_id ) (
+                                    song_id   = <song>-song_id
+                                    song_name = <song>-song_name
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        ).
   ENDMETHOD.
 
 ENDCLASS.
