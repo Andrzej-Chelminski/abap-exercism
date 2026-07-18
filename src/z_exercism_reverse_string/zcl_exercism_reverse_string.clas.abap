@@ -10,14 +10,7 @@ ENDCLASS.
 CLASS zcl_exercism_reverse_string IMPLEMENTATION.
 
   METHOD reverse_string.
-    DATA(lv_len) = strlen( input ).
-
-    DO lv_len TIMES.
-      DATA(lv_offset) = lv_len - sy-index.
-      DATA(lv_char)   = input+lv_offset(1).
-
-      result = result && lv_char.
-    ENDDO.
+    result = reverse( input ).
   ENDMETHOD.
 
 ENDCLASS.
